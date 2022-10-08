@@ -52,10 +52,12 @@ components:
     handshake:
       type: object
       properties:
-        Ip:
-          type: string
-        Name:
-          type: string
+        Type: 0
+        Data:
+          Ip:
+            type: string
+          Name:
+            type: string
       required:
         - Ip
         - Name

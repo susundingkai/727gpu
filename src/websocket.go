@@ -14,6 +14,11 @@ type ReplyObj struct {
 	Data any `json:"data"`
 }
 
+type sendObj struct {
+	Type int `json:"Type"`
+	Data any `json:"Data"`
+}
+
 func HandShake(ws *websocket.Conn) (error, database.MachineObj) {
 	var firstMsg database.MachineObj
 	err := ws.ReadJSON(&firstMsg)
