@@ -1,0 +1,111 @@
+asyncapi: 2.5.0
+
+info:
+  title: GPU WATCHER
+  version: '1.0.0'
+  description: ""
+
+servers:
+  public:
+    url: 127.0.0.1
+    protocol: ws
+    description: ""
+
+channels:
+  /node:
+    publish:
+      description: 发送GPU信息到服务器
+      operationId: processReceivedMessage
+      message:
+        oneOf:
+          - $ref: '#/components/messages/handshake'
+          - $ref: '#/components/messages/gpuinfo'
+
+    subscribe:
+      description: Messages that you receive from the API
+      operationId: sendMessage
+      message:
+        oneOf:
+          - $ref: '#/components/messages/hello'
+components:
+  messages:
+    handshake:
+      summary: 包含自身服务器信息的握手消息
+      description: 建立连接后应首先发送，否则无法保持连接
+      payload:
+        $ref: '#/components/schemas/handshake'
+      x-response:
+        $ref: '#/components/messages/hello'
+    hello:
+      summary: （暂时没有）包含了节点服务器获取信息的各种设置
+      description: 例如设置查询频率等
+      payload:
+        $ref: '#/components/schemas/hello'
+
+    gpuinfo:
+      description: 发送gpu信息
+      payload:
+        $ref: '#/components/schemas/gpuinfo'
+
+
+  schemas:
+    handshake:
+      type: object
+      properties:
+        Ip:
+          type: string
+        Name:
+          type: string
+      required:
+        - Ip
+        - Name
+      example:
+        Ip: 10.3.240.101
+        Name: GPU4
+    heartbeat:
+      type: object
+      properties:
+        event:
+          type: string
+          const: heartbeat
+    hello:
+      type: object
+      properties:
+        interval:
+          type: integer
+          description: 查询频率（秒）
+      example:
+        interval: 5
+    status:
+      type: string
+      enum:
+        - online
+        - maintenance
+        - cancel_only
+        - limit_only
+        - post_only
+    gpuinfo:
+      type: object
+      properties:
+        Ip:
+          type: string
+        GpuId:
+          type: integer
+        MemTotal:
+          type: number
+        MemUsed:
+          type: number
+        MemFree:
+          type: number
+        GpuTemp:
+          type: integer
+        GpuFanSpeed:
+          type: integer
+        GpuPowerStat:
+          type: integer
+        GpuUtilRate:
+          type: integer
+        GpuMemRate:
+          type: integer
+        Time:
+          type: integer
