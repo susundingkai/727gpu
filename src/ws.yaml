@@ -9,7 +9,7 @@ servers:
   public:
     url: 127.0.0.1
     protocol: ws
-    description: ""
+    description: "111"
 
 channels:
   /node:
