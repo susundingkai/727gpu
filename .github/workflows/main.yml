@@ -23,7 +23,7 @@ jobs:
       uses: docker://asyncapi/github-action-for-generator:2.0.0
       with:
         template: '@asyncapi/html-template@0.9.0'  #In case of template from npm, because of @ it must be in quotes
-        filepath: docs/api/my-asyncapi.yml
+        filepath: src/ws.yaml
         parameters: baseHref=/test-experiment/ sidebarOrganization=byTags #space separated list of key/values
         output: generated-html
       
