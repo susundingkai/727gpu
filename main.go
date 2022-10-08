@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	_ "github.com/mattn/go-sqlite3"
+	"net"
+	"net/http"
 	"os"
 )
 
@@ -42,10 +44,19 @@ func ServeHTTP(config config.MyConfig) {
 			"",
 			SocketHandler,
 		)
-
-		if err := g.Run(fmt.Sprintf(":%d", config.Server.Port)); err != nil {
+		// 强制ipv4
+		server := &http.Server{Addr: fmt.Sprintf(":%d", config.Server.Port), Handler: g}
+		ln, err := net.Listen("tcp4", fmt.Sprintf(":%d", config.Server.Port))
+		if err != nil {
 			panic(err)
 		}
+		type tcpKeepAliveListener struct {
+			*net.TCPListener
+		}
+		server.Serve(tcpKeepAliveListener{ln.(*net.TCPListener)})
+		//if err := g.Run(fmt.Sprintf(":%d", config.Server.Port)); err != nil {
+		//	panic(err)
+		//}
 	}()
 }
 func SocketHandler(c *gin.Context) {
