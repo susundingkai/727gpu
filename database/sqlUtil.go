@@ -7,7 +7,7 @@ type MachineObj struct {
 	Name string `json:"Name"`
 }
 
-type dataObj struct {
+type DataObj struct {
 	Ip           string  `json:"Ip"`
 	GpuId        int     `json:"GpuId"`
 	MemTotal     float32 `json:"MemTotal"`
@@ -31,7 +31,7 @@ func InsertMachine(db *sql.DB, d MachineObj) error {
 	return err
 }
 
-func InsertData(db *sql.DB, d dataObj) error {
+func InsertData(db *sql.DB, d DataObj) error {
 	sql := `insert into gpu (Ip, GpuId, MemTotal, MemUsed, MemFree, GpuTemp, GpuFanSpeed, GpuPowerStat, GpuUtilRate, GpuMemRate, Time) values(?,?,?,?,?,?,?,?,?,?,?)`
 	stmt, err := db.Prepare(sql)
 	if err != nil {
@@ -41,19 +41,19 @@ func InsertData(db *sql.DB, d dataObj) error {
 	return err
 }
 
-func QueryData(db *sql.DB, ip string) (l []dataObj, e error) {
+func QueryData(db *sql.DB, ip string) (l []DataObj, e error) {
 	sql := `select * from users where Ip=?`
 	rows, err := db.Query(sql, ip)
 	if err != nil {
 		return nil, err
 	}
-	var result = make([]dataObj, 0)
+	var result = make([]DataObj, 0)
 	for rows.Next() {
 		var Ip string
 		var GpuId, GpuTemp, GpuFanSpeed, GpuPowerStat, GpuUtilRate, GpuMemRate, Time int
 		var MemTotal, MemUsed, MemFree float32
 		rows.Scan(&Ip, &GpuId, &MemTotal, &MemUsed, &MemFree, &GpuTemp, &GpuFanSpeed, &GpuPowerStat, &GpuUtilRate, &GpuMemRate, &Time)
-		result = append(result, dataObj{Ip, GpuId, MemTotal, MemUsed, MemFree, GpuTemp, GpuFanSpeed, GpuPowerStat, GpuUtilRate, GpuMemRate, Time})
+		result = append(result, DataObj{Ip, GpuId, MemTotal, MemUsed, MemFree, GpuTemp, GpuFanSpeed, GpuPowerStat, GpuUtilRate, GpuMemRate, Time})
 	}
 	return result, nil
 }

@@ -3,25 +3,36 @@ package src
 import (
 	"727gpu_server/database"
 	"database/sql"
-	"fmt"
+	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"net/http"
 )
 
 type ReplyObj struct {
-	Code int `json:"code"`
-	Data any `json:"data"`
-}
-
-type sendObj struct {
-	Type int `json:"Type"`
+	Code int `json:"Code"`
 	Data any `json:"Data"`
 }
 
+type revObj struct {
+	Type int                    `json:"Type"`
+	Data map[string]interface{} `json:"Data"`
+}
+
 func HandShake(ws *websocket.Conn) (error, database.MachineObj) {
+	var rev revObj
 	var firstMsg database.MachineObj
-	err := ws.ReadJSON(&firstMsg)
+	err := ws.ReadJSON(&rev)
+	if err != nil {
+		panic(err)
+	}
+	if rev.Type == 0 {
+		jsonStr, _ := json.Marshal(rev.Data)
+		// Convert json string to struct
+		if err := json.Unmarshal(jsonStr, &firstMsg); err != nil {
+			panic(err)
+		}
+	}
 	return err, firstMsg
 }
 
@@ -54,20 +65,19 @@ func SocketHandler(c *gin.Context, db *sql.DB) {
 	}
 	database.InsertMachine(db, handshakeMsg)
 	for {
-		msgType, msg, err := ws.ReadMessage()
+		var rev revObj
+		var msg database.DataObj
+		err := ws.ReadJSON(&rev)
 		if err != nil {
-			//panic(err)
-			break
+			panic(err)
 		}
-		fmt.Printf("Message Type: %d, Message: %s\n", msgType, string(msg))
-		err = ws.WriteJSON(struct {
-			Reply string `json:"reply"`
-		}{
-			Reply: "Echo...",
-		})
-		if err != nil {
-			//panic(err)
-			break
+		if rev.Type == 1 {
+			jsonStr, _ := json.Marshal(rev.Data)
+			// Convert json string to struct
+			if err := json.Unmarshal(jsonStr, &msg); err != nil {
+				panic(err)
+			}
+			database.InsertData(db, msg)
 		}
 	}
 }
