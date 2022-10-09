@@ -1,0 +1,6 @@
+<!--index.wxml-->
+<view class="container">
+  <l-button type="default">默认按钮</l-button>
+  <l-button type="error">error</l-button>
+  <l-button type="error">error</l-button>
+</view>
