@@ -1,6 +1,8 @@
 package database
 
-import "database/sql"
+import (
+	"database/sql"
+)
 
 type MachineObj struct {
 	Ip   string `json:"Ip"`
@@ -42,7 +44,7 @@ func InsertData(db *sql.DB, d DataObj) error {
 }
 
 func QueryData(db *sql.DB, ip string) (l []DataObj, e error) {
-	sql := `select * from users where Ip=?`
+	sql := `select * from gpu where Ip=?`
 	rows, err := db.Query(sql, ip)
 	if err != nil {
 		return nil, err
@@ -50,16 +52,29 @@ func QueryData(db *sql.DB, ip string) (l []DataObj, e error) {
 	var result = make([]DataObj, 0)
 	for rows.Next() {
 		var Ip string
-		var GpuId, GpuTemp, GpuFanSpeed, GpuPowerStat, GpuUtilRate, GpuMemRate, Time int
+		var Id, GpuId, GpuTemp, GpuFanSpeed, GpuPowerStat, GpuUtilRate, GpuMemRate, Time int
 		var MemTotal, MemUsed, MemFree float32
-		rows.Scan(&Ip, &GpuId, &MemTotal, &MemUsed, &MemFree, &GpuTemp, &GpuFanSpeed, &GpuPowerStat, &GpuUtilRate, &GpuMemRate, &Time)
+		rows.Scan(&Id, &Ip, &GpuId, &MemTotal, &MemUsed, &MemFree, &GpuTemp, &GpuFanSpeed, &GpuPowerStat, &GpuUtilRate, &GpuMemRate, &Time)
 		result = append(result, DataObj{Ip, GpuId, MemTotal, MemUsed, MemFree, GpuTemp, GpuFanSpeed, GpuPowerStat, GpuUtilRate, GpuMemRate, Time})
 	}
 	return result, nil
 }
-
+func QueryAllMachine(db *sql.DB) (l []MachineObj, e error) {
+	sql := `select * from machine`
+	rows, err := db.Query(sql)
+	if err != nil {
+		return nil, err
+	}
+	var result = make([]MachineObj, 0)
+	for rows.Next() {
+		var Ip, Name string
+		rows.Scan(&Ip, &Name)
+		result = append(result, MachineObj{Ip, Name})
+	}
+	return result, nil
+}
 func QueryMachine(db *sql.DB, ip string) (name string, e error) {
-	sql := `select * from users where Ip=?`
+	sql := `select * from machine where Ip=?`
 	err := db.QueryRow(sql, ip).Scan(&name)
 	if err != nil {
 		return "", err

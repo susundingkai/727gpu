@@ -4,9 +4,11 @@ import (
 	"727gpu_server/database"
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"net/http"
+	"time"
 )
 
 type ReplyObj struct {
@@ -17,6 +19,16 @@ type ReplyObj struct {
 type revObj struct {
 	Type int                    `json:"Type"`
 	Data map[string]interface{} `json:"Data"`
+}
+type sendInfoObj struct {
+	Code int     `json:"Code"`
+	Data infoObj `json:"Data"`
+}
+
+type infoObj struct {
+	Ip   string             `json:"Ip"`
+	Name string             `json:"Name"`
+	Data []database.DataObj `json:"Data"`
 }
 
 func HandShake(ws *websocket.Conn) (error, database.MachineObj) {
@@ -79,5 +91,51 @@ func SocketHandler(c *gin.Context, db *sql.DB) {
 			}
 			database.InsertData(db, msg)
 		}
+	}
+}
+
+func ProtalHandler(c *gin.Context, db *sql.DB) {
+	upGrader := websocket.Upgrader{
+		CheckOrigin: func(r *http.Request) bool {
+			return true
+		},
+		ReadBufferSize:   1024,
+		WriteBufferSize:  1024,
+		HandshakeTimeout: 5000 * time.Millisecond,
+	}
+
+	ws, err := upGrader.Upgrade(c.Writer, c.Request, nil)
+	if err != nil {
+		panic(err)
+	}
+	defer func() {
+		closeSocketErr := ws.Close()
+		if closeSocketErr != nil {
+			panic(err)
+		}
+	}()
+	var machines []database.MachineObj
+	machines, err = database.QueryAllMachine(db)
+	if err != nil {
+		panic(err)
+	}
+	for {
+		//fmt.Println(machines)
+		//if ws.PingHandler() != nil {
+		//	break
+		//}
+		for _, machine := range machines {
+			dataList, err := database.QueryData(db, machine.Ip)
+			if err != nil {
+				fmt.Println(err)
+				continue
+			}
+			err = ws.WriteJSON(ReplyObj{Code: 200, Data: infoObj{Ip: machine.Ip, Name: machine.Name, Data: dataList}})
+			if err != nil {
+				fmt.Println(err)
+				panic(err)
+			}
+		}
+		time.Sleep(5000 * time.Millisecond)
 	}
 }

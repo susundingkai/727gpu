@@ -44,6 +44,11 @@ func ServeHTTP(config config.MyConfig) {
 			"",
 			SocketHandler,
 		)
+		public = g.Group("/portal")
+		public.GET(
+			"",
+			ProtalHandler,
+		)
 		// 强制ipv4
 		server := &http.Server{Addr: fmt.Sprintf(":%d", config.Server.Port), Handler: g}
 		ln, err := net.Listen("tcp4", fmt.Sprintf(":%d", config.Server.Port))
@@ -61,6 +66,9 @@ func ServeHTTP(config config.MyConfig) {
 }
 func SocketHandler(c *gin.Context) {
 	src.SocketHandler(c, db)
+}
+func ProtalHandler(c *gin.Context) {
+	src.ProtalHandler(c, db)
 }
 func GetDB() *sql.DB {
 	db, err := sql.Open(dbDriverName, dbName)
