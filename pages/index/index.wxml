@@ -1,6 +1,13 @@
 <!--index.wxml-->
+
 <view class="container">
-  <scroll-view 	scroll-y="true">
-  <view wx:for="{{gpuInfo}}">{{item.GpuFanSpeed}}</view>
+  <scroll-view 	scroll-y="true" 	enable-flex="true" class="scroll">
+  <l-card wx:for="{{gpuInfo}}"
+          type="primary"
+          plaintext="{{true}}"
+          title="{{item.Ip}}">
+    <view class="content" >{{item.GpuPowerStat}}</view>
+  </l-card>
+  
   </scroll-view>
 </view>

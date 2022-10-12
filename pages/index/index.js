@@ -12,7 +12,7 @@ Page({
     //创建websocket
     //正式地址使用wss
     var socket = wx.connectSocket({
-      url: 'ws://127.0.0.1:8080/portal',
+      url: 'ws://47.93.15.215:8765/portal',
       success: res => {
         console.info('创建连接成功');
         //socketTaskId: 22
