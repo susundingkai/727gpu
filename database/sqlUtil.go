@@ -30,7 +30,7 @@ func (l DataSlice) Len() int           { return len(l) }
 func (l DataSlice) Swap(i, j int)      { l[i], l[j] = l[j], l[i] }
 func (l DataSlice) Less(i, j int) bool { return l[i].Time < l[j].Time }
 func InsertMachine(db *sql.DB, d MachineObj) error {
-	sql := `INSERT OR REPLACE into machine (Ip,Name) values(?,?,?,?)`
+	sql := `INSERT OR REPLACE into machine (Ip,Name,Cnt,Model) values(?,?,?,?)`
 	stmt, err := db.Prepare(sql)
 	if err != nil {
 		return err
