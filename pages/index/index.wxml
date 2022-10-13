@@ -1,12 +1,19 @@
 <!--index.wxml-->
-
+<wxs module="filters" src="/utils/filter.wxs"></wxs>
 <view class="container">
-  <scroll-view 	scroll-y="true" 	enable-flex="true" class="scroll">
-  <l-card wx:for="{{gpuInfo}}"
+  <scroll-view 	scroll-y="true" class="scroll">
+  <l-card type="primary"
+          l-class="card"
+          plaintext="{{true}}"
+          title="{{gpuInfo[0].Ip}}">
+    <l-card wx:for="{{gpuInfo}}"
           type="primary"
           plaintext="{{true}}"
-          title="{{item.Ip}}">
-    <view class="content" >{{item.GpuPowerStat}}</view>
+          title="Id: {{item.GpuId}}">
+    <view class="content" > {{filters.toFix(item.MemUsed)}} GB/ {{filters.toFix(item.MemTotal)}} GB</view>
+    <view class="content" > {{item.GpuUtilRate}}</view>
+    
+    </l-card>
   </l-card>
   
   </scroll-view>
