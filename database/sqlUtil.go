@@ -5,8 +5,10 @@ import (
 )
 
 type MachineObj struct {
-	Ip   string `json:"Ip"`
-	Name string `json:"Name"`
+	Ip    string `json:"Ip"`
+	Name  string `json:"Name"`
+	Cnt   int    `json:"Cnt"`
+	Model string `json:"Model"`
 }
 
 type DataObj struct {
@@ -28,12 +30,12 @@ func (l DataSlice) Len() int           { return len(l) }
 func (l DataSlice) Swap(i, j int)      { l[i], l[j] = l[j], l[i] }
 func (l DataSlice) Less(i, j int) bool { return l[i].Time < l[j].Time }
 func InsertMachine(db *sql.DB, d MachineObj) error {
-	sql := `INSERT OR REPLACE into machine (Ip,Name) values(?,?)`
+	sql := `INSERT OR REPLACE into machine (Ip,Name) values(?,?,?,?)`
 	stmt, err := db.Prepare(sql)
 	if err != nil {
 		return err
 	}
-	_, err = stmt.Exec(d.Ip, d.Name)
+	_, err = stmt.Exec(d.Ip, d.Name, d.Cnt, d.Model)
 	return err
 }
 
@@ -95,9 +97,10 @@ func QueryAllMachine(db *sql.DB) (l []MachineObj, e error) {
 	}
 	var result = make([]MachineObj, 0)
 	for rows.Next() {
-		var Ip, Name string
-		rows.Scan(&Ip, &Name)
-		result = append(result, MachineObj{Ip, Name})
+		var Ip, Name, Model string
+		var Cnt int
+		rows.Scan(&Ip, &Name, &Cnt, &Model)
+		result = append(result, MachineObj{Ip, Name, Cnt, Model})
 	}
 	return result, nil
 }
