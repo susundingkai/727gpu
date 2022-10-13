@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"net/http"
+	"sort"
 	"time"
 )
 
@@ -105,6 +106,7 @@ func ProtalHandler(c *gin.Context, db *sql.DB) {
 	}
 
 	ws, err := upGrader.Upgrade(c.Writer, c.Request, nil)
+	lastTime := 0
 	if err != nil {
 		panic(err)
 	}
@@ -114,8 +116,7 @@ func ProtalHandler(c *gin.Context, db *sql.DB) {
 			panic(err)
 		}
 	}()
-	var machines []database.MachineObj
-	machines, err = database.QueryAllMachine(db)
+	machines, err := database.QueryAllMachine(db)
 	if err != nil {
 		panic(err)
 	}
@@ -125,15 +126,23 @@ func ProtalHandler(c *gin.Context, db *sql.DB) {
 		//	break
 		//}
 		for _, machine := range machines {
-			dataList, err := database.QueryData(db, machine.Ip)
+			dataList, err := database.QueryNewData(db, lastTime, machine.Ip)
 			if err != nil {
 				fmt.Println(err)
 				continue
 			}
-			err = ws.WriteJSON(ReplyObj{Code: 200, Data: infoObj{Ip: machine.Ip, Name: machine.Name, Data: dataList}})
-			if err != nil {
-				fmt.Println(err)
-				panic(err)
+			sort.Sort(dataList)
+			length := dataList.Len()
+			if length == 0 {
+				continue
+			}
+			if dataList[length-1].Time > lastTime {
+				err = ws.WriteJSON(ReplyObj{Code: 200, Data: infoObj{Ip: machine.Ip, Name: machine.Name, Data: dataList[length-1 : length]}})
+				if err != nil {
+					fmt.Println(err)
+					panic(err)
+				}
+				lastTime = dataList[length-1].Time
 			}
 		}
 		time.Sleep(5000 * time.Millisecond)

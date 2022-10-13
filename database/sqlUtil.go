@@ -22,7 +22,11 @@ type DataObj struct {
 	GpuMemRate   int     `json:"GpuMemRate"`
 	Time         int     `json:"Time"`
 }
+type DataSlice []DataObj
 
+func (l DataSlice) Len() int           { return len(l) }
+func (l DataSlice) Swap(i, j int)      { l[i], l[j] = l[j], l[i] }
+func (l DataSlice) Less(i, j int) bool { return l[i].Time < l[j].Time }
 func InsertMachine(db *sql.DB, d MachineObj) error {
 	sql := `INSERT OR REPLACE into machine (Ip,Name) values(?,?)`
 	stmt, err := db.Prepare(sql)
@@ -43,9 +47,33 @@ func InsertData(db *sql.DB, d DataObj) error {
 	return err
 }
 
-func QueryData(db *sql.DB, ip string) (l []DataObj, e error) {
+func QueryData(db *sql.DB, ip string) (l DataSlice, e error) {
 	sql := `select * from gpu where Ip=?`
 	rows, err := db.Query(sql, ip)
+	if err != nil {
+		return nil, err
+	}
+	var result = make([]DataObj, 0)
+	for rows.Next() {
+		var Ip string
+		var Id, GpuId, GpuTemp, GpuFanSpeed, GpuPowerStat, GpuUtilRate, GpuMemRate, Time int
+		var MemTotal, MemUsed, MemFree float32
+		rows.Scan(&Id, &Ip, &GpuId, &MemTotal, &MemUsed, &MemFree, &GpuTemp, &GpuFanSpeed, &GpuPowerStat, &GpuUtilRate, &GpuMemRate, &Time)
+		result = append(result, DataObj{Ip, GpuId, MemTotal, MemUsed, MemFree, GpuTemp, GpuFanSpeed, GpuPowerStat, GpuUtilRate, GpuMemRate, Time})
+	}
+	return result, nil
+}
+func QueryNewData(db *sql.DB, lastTime int, ip string) (l DataSlice, e error) {
+	var _sql string
+	var rows *sql.Rows
+	var err error
+	if lastTime != 0 {
+		_sql = `select * from gpu where Ip=? and Time > ?`
+		rows, err = db.Query(_sql, ip, lastTime)
+	} else {
+		_sql = `select * from gpu where Id=(select max(Id) from gpu)`
+		rows, err = db.Query(_sql, ip, lastTime)
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -73,6 +101,7 @@ func QueryAllMachine(db *sql.DB) (l []MachineObj, e error) {
 	}
 	return result, nil
 }
+
 func QueryMachine(db *sql.DB, ip string) (name string, e error) {
 	sql := `select * from machine where Ip=?`
 	err := db.QueryRow(sql, ip).Scan(&name)
