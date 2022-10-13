@@ -18,8 +18,8 @@ type ReplyObj struct {
 }
 
 type revObj struct {
-	Type int                    `json:"Type"`
-	Data map[string]interface{} `json:"Data"`
+	Type int                      `json:"Type"`
+	Data []map[string]interface{} `json:"Data"`
 }
 type sendInfoObj struct {
 	Code int     `json:"Code"`
@@ -79,7 +79,7 @@ func SocketHandler(c *gin.Context, db *sql.DB) {
 	database.InsertMachine(db, handshakeMsg)
 	for {
 		var rev revObj
-		var msg database.DataObj
+		var msg []database.DataObj
 		err := ws.ReadJSON(&rev)
 		if err != nil {
 			panic(err)
@@ -90,7 +90,9 @@ func SocketHandler(c *gin.Context, db *sql.DB) {
 			if err := json.Unmarshal(jsonStr, &msg); err != nil {
 				panic(err)
 			}
-			database.InsertData(db, msg)
+			for _, d := range msg {
+				database.InsertData(db, d)
+			}
 		}
 	}
 }
