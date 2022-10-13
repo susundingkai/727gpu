@@ -69,13 +69,8 @@ func QueryNewData(db *sql.DB, lastTime int, ip string) (l DataSlice, e error) {
 	var _sql string
 	var rows *sql.Rows
 	var err error
-	if lastTime != 0 {
-		_sql = `select * from gpu where Ip=? and Time > ?`
-		rows, err = db.Query(_sql, ip, lastTime)
-	} else {
-		_sql = `select * from gpu where Id=(select max(Id) from gpu)`
-		rows, err = db.Query(_sql, ip, lastTime)
-	}
+	_sql = `SELECT *,MAX(Time) FROM gpu WHERE Ip=? GROUP BY GpuId ;`
+	rows, err = db.Query(_sql, ip)
 	if err != nil {
 		return nil, err
 	}
