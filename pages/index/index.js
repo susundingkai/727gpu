@@ -4,7 +4,8 @@ const app = getApp()
 
 Page({
   data: {
-    gpuInfo:[]
+    machineIPs: [],
+    gpuInfo: {}
   },
   // 事件处理函数
   onLoad(options) {
@@ -32,12 +33,18 @@ Page({
     });
     //服务器发送监听
     socket.onMessage(function (e) {
-      
+
       var data = JSON.parse(e.data);
-      data=data.Data.Data
-      console.info(data);
+      var _info = _this.data.gpuInfo
+      data = data.Data.Data
+      if (_info[data[0].Ip] == null) {
+        _this.data.machineIPs.push(data[0].Ip)
+      }
+      _info[data[0].Ip] = data
+      console.log(_info)
       _this.setData({
-        gpuInfo: data
+        machineIPs: _this.data.machineIPs,
+        gpuInfo: _info
       })
       // var list = _this.data.result;
       // list = list.concat([data]);

@@ -12,7 +12,6 @@
   margin: 10rpx auto !important;
 }
 
-
 .content {
   margin-top: 10rpx;
   color: #666;
@@ -22,4 +21,11 @@
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 5;
+}
+
+.display_item{
+  display:flex;
+}
+.display_item view{
+  padding: 10rpx;
 }
