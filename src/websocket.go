@@ -40,7 +40,7 @@ func HandShake(ws *websocket.Conn) (error, database.MachineObj) {
 		panic(err)
 	}
 	if rev.Type == 0 {
-		jsonStr, _ := json.Marshal(rev.Data)
+		jsonStr, _ := json.Marshal(rev.Data[0])
 		// Convert json string to struct
 		if err := json.Unmarshal(jsonStr, &firstMsg); err != nil {
 			panic(err)
