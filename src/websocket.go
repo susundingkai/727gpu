@@ -124,6 +124,7 @@ func ProtalHandler(c *gin.Context, db *sql.DB) {
 		//	break
 		//}
 		machines, err := database.QueryAllMachine(db)
+
 		if err != nil {
 			panic(err)
 		}
@@ -139,7 +140,7 @@ func ProtalHandler(c *gin.Context, db *sql.DB) {
 				continue
 			}
 			if dataList[length-1].Time > lastTime {
-				err = ws.WriteJSON(ReplyObj{Code: 200, Data: infoObj{Ip: machine.Ip, Name: machine.Name, Data: dataList[length-1 : length]}})
+				err = ws.WriteJSON(ReplyObj{Code: 200, Data: infoObj{Ip: machine.Ip, Name: machine.Name, Data: dataList}})
 				if err != nil {
 					fmt.Println(err)
 					panic(err)
