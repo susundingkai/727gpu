@@ -116,15 +116,15 @@ func ProtalHandler(c *gin.Context, db *sql.DB) {
 			panic(err)
 		}
 	}()
-	machines, err := database.QueryAllMachine(db)
-	if err != nil {
-		panic(err)
-	}
 	for {
 		//fmt.Println(machines)
 		//if ws.PingHandler() != nil {
 		//	break
 		//}
+		machines, err := database.QueryAllMachine(db)
+		if err != nil {
+			panic(err)
+		}
 		for _, machine := range machines {
 			dataList, err := database.QueryNewData(db, lastTime, machine.Ip)
 			if err != nil {
