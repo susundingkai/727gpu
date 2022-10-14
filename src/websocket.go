@@ -145,9 +145,10 @@ func ProtalHandler(c *gin.Context, db *sql.DB) {
 					fmt.Println(err)
 					panic(err)
 				}
-				lastTime = dataList[length-1].Time
+
 			}
 		}
+		lastTime = int(time.Now().UnixNano() / 1e6)
 		time.Sleep(5000 * time.Millisecond)
 	}
 }
