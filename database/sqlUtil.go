@@ -83,6 +83,7 @@ func QueryNewData(db *sql.DB, lastTime int, ip string) (l DataSlice, e error) {
 		rows.Scan(&Id, &Ip, &GpuId, &MemTotal, &MemUsed, &MemFree, &GpuTemp, &GpuFanSpeed, &GpuPowerStat, &GpuUtilRate, &GpuMemRate, &Time)
 		result = append(result, DataObj{Ip, GpuId, MemTotal, MemUsed, MemFree, GpuTemp, GpuFanSpeed, GpuPowerStat, GpuUtilRate, GpuMemRate, Time})
 	}
+	fmt.Println(result)
 	return result, nil
 }
 func QueryAllMachine(db *sql.DB) (l []MachineObj, e error) {
@@ -99,7 +100,7 @@ func QueryAllMachine(db *sql.DB) (l []MachineObj, e error) {
 		rows.Scan(&Ip, &Name, &Cnt, &Model)
 		result = append(result, MachineObj{Ip, Name, Cnt, Model})
 	}
-	fmt.Println(result)
+
 	return result, nil
 }
 
