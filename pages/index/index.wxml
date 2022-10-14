@@ -2,7 +2,7 @@
 <wxs module="filters" src="/utils/filter.wxs"></wxs>
 <view class="container">
   <scroll-view scroll-y="true" class="scroll">
-    <l-card type="primary" wx:for="{{machineIPs}}" l-class="card" plaintext="{{true}}" title="{{gpuInfo[machineIPs][0].Ip}}">
+    <l-card type="primary" wx:for="{{machineIPs}}" l-class="card" plaintext="{{true}}" title="{{item}}">
       <l-card wx:for="{{gpuInfo[item]}}" type="primary" plaintext="{{true}}" title="Id: {{item.GpuId}}">
         <view class="display_item" style="flex-direction:row;">
           <view class="content">Mem: {{filters.toFix(item.MemUsed)}} GB/ {{filters.toFix(item.MemTotal)}} GB</view>
@@ -10,6 +10,5 @@
         </view>
       </l-card>
     </l-card>
-
   </scroll-view>
 </view>
