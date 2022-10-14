@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"fmt"
 )
 
 type MachineObj struct {
@@ -85,6 +86,7 @@ func QueryNewData(db *sql.DB, lastTime int, ip string) (l DataSlice, e error) {
 	return result, nil
 }
 func QueryAllMachine(db *sql.DB) (l []MachineObj, e error) {
+
 	sql := `select * from machine`
 	rows, err := db.Query(sql)
 	if err != nil {
@@ -97,6 +99,7 @@ func QueryAllMachine(db *sql.DB) (l []MachineObj, e error) {
 		rows.Scan(&Ip, &Name, &Cnt, &Model)
 		result = append(result, MachineObj{Ip, Name, Cnt, Model})
 	}
+	fmt.Println(result)
 	return result, nil
 }
 
