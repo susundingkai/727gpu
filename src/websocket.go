@@ -129,9 +129,7 @@ func ProtalHandler(c *gin.Context, db *sql.DB) {
 			panic(err)
 		}
 		for _, machine := range machines {
-			fmt.Println(machine)
 			dataList, err := database.QueryNewData(db, lastTime, machine.Ip)
-			fmt.Println(dataList)
 			if err != nil {
 				fmt.Println(err)
 				continue

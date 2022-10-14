@@ -22,6 +22,7 @@ var (
 )
 
 func main() {
+
 	stuck := make(chan os.Signal)
 	db = GetDB()
 	config := config.ReadConfig()
