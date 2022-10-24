@@ -9,7 +9,6 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/unrolled/secure"
 	"os"
-	"strconv"
 )
 
 const (
@@ -50,7 +49,26 @@ func ServeHTTP(config config.MyConfig) {
 			"",
 			ProtalHandler,
 		)
-		g.Use(TlsHandler(config.Server.Port))
+		secureMiddleware := secure.New(secure.Options{
+			FrameDeny: true,
+		})
+		secureFunc := func() gin.HandlerFunc {
+			return func(c *gin.Context) {
+				err := secureMiddleware.Process(c.Writer, c.Request)
+
+				// If there was an error, do not continue.
+				if err != nil {
+					c.Abort()
+					return
+				}
+
+				// Avoid header rewrite if response is a redirection.
+				if status := c.Writer.Status(); status > 300 && status < 399 {
+					c.Abort()
+				}
+			}
+		}()
+		g.Use(secureFunc)
 		g.RunTLS(fmt.Sprintf(":%d", config.Server.Port), "./cert/pris.ssdk.icu.pem", "./cert/pris.ssdk.icu.key")
 		//// 强制ipv4
 		//server := &http.Server{Addr: fmt.Sprintf(":%d", config.Server.Port), Handler: g}
@@ -79,20 +97,4 @@ func GetDB() *sql.DB {
 		panic(err)
 	}
 	return db
-}
-func TlsHandler(port int) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		secureMiddleware := secure.New(secure.Options{
-			SSLRedirect: true,
-			SSLHost:     ":" + strconv.Itoa(port),
-		})
-		err := secureMiddleware.Process(c.Writer, c.Request)
-
-		// If there was an error, do not continue.
-		if err != nil {
-			return
-		}
-
-		c.Next()
-	}
 }
