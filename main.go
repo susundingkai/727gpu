@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	_ "github.com/mattn/go-sqlite3"
-	"net"
-	"net/http"
+	"github.com/unrolled/secure"
 	"os"
+	"strconv"
 )
 
 const (
@@ -50,16 +50,18 @@ func ServeHTTP(config config.MyConfig) {
 			"",
 			ProtalHandler,
 		)
-		// 强制ipv4
-		server := &http.Server{Addr: fmt.Sprintf(":%d", config.Server.Port), Handler: g}
-		ln, err := net.Listen("tcp4", fmt.Sprintf(":%d", config.Server.Port))
-		if err != nil {
-			panic(err)
-		}
-		type tcpKeepAliveListener struct {
-			*net.TCPListener
-		}
-		server.Serve(tcpKeepAliveListener{ln.(*net.TCPListener)})
+		g.Use(TlsHandler(config.Server.Port))
+		g.RunTLS(fmt.Sprintf(":%d", config.Server.Port), "./cert/pris.ssdk.icu.pem", "./cert/pris.ssdk.icu.ssl.key")
+		//// 强制ipv4
+		//server := &http.Server{Addr: fmt.Sprintf(":%d", config.Server.Port), Handler: g}
+		//ln, err := net.Listen("tcp4", fmt.Sprintf(":%d", config.Server.Port))
+		//if err != nil {
+		//	panic(err)
+		//}
+		//type tcpKeepAliveListener struct {
+		//	*net.TCPListener
+		//}
+		//server.Serve(tcpKeepAliveListener{ln.(*net.TCPListener)})
 		//if err := g.Run(fmt.Sprintf(":%d", config.Server.Port)); err != nil {
 		//	panic(err)
 		//}
@@ -77,4 +79,20 @@ func GetDB() *sql.DB {
 		panic(err)
 	}
 	return db
+}
+func TlsHandler(port int) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		secureMiddleware := secure.New(secure.Options{
+			SSLRedirect: true,
+			SSLHost:     ":" + strconv.Itoa(port),
+		})
+		err := secureMiddleware.Process(c.Writer, c.Request)
+
+		// If there was an error, do not continue.
+		if err != nil {
+			return
+		}
+
+		c.Next()
+	}
 }
