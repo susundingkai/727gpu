@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/unrolled/secure"
+	"net/http"
 	"os"
 )
 
@@ -49,28 +49,8 @@ func ServeHTTP(config config.MyConfig) {
 			"",
 			ProtalHandler,
 		)
-		secureMiddleware := secure.New(secure.Options{
-			FrameDeny: true,
-		})
-		secureFunc := func() gin.HandlerFunc {
-			return func(c *gin.Context) {
-				err := secureMiddleware.Process(c.Writer, c.Request)
 
-				// If there was an error, do not continue.
-				if err != nil {
-					c.Abort()
-					return
-				}
-
-				// Avoid header rewrite if response is a redirection.
-				if status := c.Writer.Status(); status > 300 && status < 399 {
-					c.Abort()
-				}
-			}
-		}()
-		g.Use(secureFunc)
-		g.RunTLS(fmt.Sprintf(":%d", config.Server.Port), "./cert/pris.ssdk.icu.pem", "./cert/pris.ssdk.icu.key")
-		//// 强制ipv4
+		// 强制ipv4
 		//server := &http.Server{Addr: fmt.Sprintf(":%d", config.Server.Port), Handler: g}
 		//ln, err := net.Listen("tcp4", fmt.Sprintf(":%d", config.Server.Port))
 		//if err != nil {
@@ -79,6 +59,7 @@ func ServeHTTP(config config.MyConfig) {
 		//type tcpKeepAliveListener struct {
 		//	*net.TCPListener
 		//}
+		http.ListenAndServeTLS(fmt.Sprintf(":%d", config.Server.Port), "./cert/pris.ssdk.icu.pem", "./cert/pris.ssdk.icu.key", g)
 		//server.Serve(tcpKeepAliveListener{ln.(*net.TCPListener)})
 		//if err := g.Run(fmt.Sprintf(":%d", config.Server.Port)); err != nil {
 		//	panic(err)
