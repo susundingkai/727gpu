@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/unrolled/secure"
+	"net/http"
 	"os"
 )
 
@@ -59,14 +60,14 @@ func ServeHTTP(config config.MyConfig) {
 		//type tcpKeepAliveListener struct {
 		//	*net.TCPListener
 		//}
-		//http.ListenAndServeTLS(fmt.Sprintf(":%d", config.Server.Port), "./cert/pris.ssdk.icu.crt", "./cert/pris.ssdk.icu.key", g)
+		http.ListenAndServeTLS(fmt.Sprintf(":%d", config.Server.Port), "./cert/pris.ssdk.icu.crt", "./cert/pris.ssdk.icu.key", g)
 		//server.Serve(tcpKeepAliveListener{ln.(*net.TCPListener)})
 		//if err := g.Run(fmt.Sprintf(":%d", config.Server.Port)); err != nil {
 		//	panic(err)
 		//}
 		//g.Use(LoadTls())
 		// 开启端口监听
-		g.RunTLS(":443", "./cert/pris.ssdk.icu.pem", "./cert/pris.ssdk.icu.key")
+		//g.RunTLS(":443", "./cert/pris.ssdk.icu.pem", "./cert/pris.ssdk.icu.key")
 	}()
 }
 func LoadTls() gin.HandlerFunc {
