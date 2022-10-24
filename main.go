@@ -4,10 +4,8 @@ import (
 	"727gpu_server/config"
 	"727gpu_server/src"
 	"database/sql"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/unrolled/secure"
 	"os"
 )
 
@@ -61,30 +59,15 @@ func ServeHTTP(config config.MyConfig) {
 		//}
 		//http.ListenAndServeTLS(fmt.Sprintf(":%d", config.Server.Port), "./cert/pris.ssdk.icu.crt", "./cert/pris.ssdk.icu.key", g)
 		//server.Serve(tcpKeepAliveListener{ln.(*net.TCPListener)})
-		if err := g.Run(fmt.Sprintf(":%d", config.Server.Port)); err != nil {
-			panic(err)
-		}
+		//if err := g.Run(fmt.Sprintf(":%d", config.Server.Port)); err != nil {
+		//	panic(err)
+		//}
 		//g.Use(LoadTls())
 		// 开启端口监听
-		//g.RunTLS(":443", "./cert/pris.ssdk.icu.pem", "./cert/pris.ssdk.icu.key")
+		g.RunTLS(":443", "./cert/pris.ssdk.icu.pem", "./cert/pris.ssdk.icu.key")
 	}()
 }
-func LoadTls() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		middleware := secure.New(secure.Options{
-			SSLRedirect: true,
-			SSLHost:     "localhost:8765",
-		})
-		err := middleware.Process(c.Writer, c.Request)
-		if err != nil {
-			//如果出现错误，请不要继续。
-			fmt.Println(err)
-			return
-		}
-		// 继续往下处理
-		c.Next()
-	}
-}
+
 func SocketHandler(c *gin.Context) {
 	src.SocketHandler(c, db)
 }
