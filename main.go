@@ -6,6 +6,7 @@ import (
 	"database/sql"
 	"github.com/gin-gonic/gin"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/unrolled/secure"
 	"os"
 )
 
@@ -62,12 +63,28 @@ func ServeHTTP(config config.MyConfig) {
 		//if err := g.Run(fmt.Sprintf(":%d", config.Server.Port)); err != nil {
 		//	panic(err)
 		//}
-		//g.Use(LoadTls())
+		g.Use(TlsHandler())
 		// 开启端口监听
 		g.RunTLS(":443", "./cert/pris.ssdk.icu.pem", "./cert/pris.ssdk.icu.key")
 	}()
 }
 
+func TlsHandler() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		secureMiddleware := secure.New(secure.Options{
+			SSLRedirect: true,
+			SSLHost:     "localhost:8080",
+		})
+		err := secureMiddleware.Process(c.Writer, c.Request)
+
+		// If there was an error, do not continue.
+		if err != nil {
+			return
+		}
+
+		c.Next()
+	}
+}
 func SocketHandler(c *gin.Context) {
 	src.SocketHandler(c, db)
 }
