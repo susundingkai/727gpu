@@ -66,7 +66,7 @@ func ServeHTTP(config config.MyConfig) {
 		//}
 		//g.Use(LoadTls())
 		// 开启端口监听
-		g.RunTLS("127.0.0.1:8765", "./cert/pris.ssdk.icu.pem", "./cert/pris.ssdk.icu.key")
+		g.RunTLS("0.0.0.0:8765", "./cert/pris.ssdk.icu.pem", "./cert/pris.ssdk.icu.key")
 	}()
 }
 func LoadTls() gin.HandlerFunc {
