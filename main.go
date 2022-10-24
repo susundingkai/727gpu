@@ -59,7 +59,7 @@ func ServeHTTP(config config.MyConfig) {
 		//type tcpKeepAliveListener struct {
 		//	*net.TCPListener
 		//}
-		http.ListenAndServeTLS(fmt.Sprintf(":%d", config.Server.Port), "./cert/pris.ssdk.icu.pem", "./cert/pris.ssdk.icu.key", g)
+		http.ListenAndServeTLS(fmt.Sprintf(":%d", config.Server.Port), "./cert/pris.ssdk.icu.crt", "./cert/pris.ssdk.icu.key", g)
 		//server.Serve(tcpKeepAliveListener{ln.(*net.TCPListener)})
 		//if err := g.Run(fmt.Sprintf(":%d", config.Server.Port)); err != nil {
 		//	panic(err)
