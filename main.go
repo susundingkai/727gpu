@@ -64,7 +64,7 @@ func ServeHTTP(config config.MyConfig) {
 		//if err := g.Run(fmt.Sprintf(":%d", config.Server.Port)); err != nil {
 		//	panic(err)
 		//}
-		g.Use(LoadTls())
+		//g.Use(LoadTls())
 		// 开启端口监听
 		g.RunTLS(":8765", "./cert/pris.ssdk.icu.pem", "./cert/pris.ssdk.icu.key")
 	}()
