@@ -13,7 +13,7 @@ Page({
     //创建websocket
     //正式地址使用wss
     var socket = wx.connectSocket({
-      url: 'ws://47.93.15.215:8765/portal',
+      url: 'wss://pris.ssdk.icu/portal',
       success: res => {
         console.info('创建连接成功');
         //socketTaskId: 22
