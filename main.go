@@ -51,7 +51,7 @@ func ServeHTTP(config config.MyConfig) {
 			ProtalHandler,
 		)
 		g.Use(TlsHandler(config.Server.Port))
-		g.RunTLS(fmt.Sprintf(":%d", config.Server.Port), "./cert/pris.ssdk.icu.pem", "./cert/pris.ssdk.icu.ssl.key")
+		g.RunTLS(fmt.Sprintf(":%d", config.Server.Port), "./cert/pris.ssdk.icu.pem", "./cert/pris.ssdk.icu.key")
 		//// 强制ipv4
 		//server := &http.Server{Addr: fmt.Sprintf(":%d", config.Server.Port), Handler: g}
 		//ln, err := net.Listen("tcp4", fmt.Sprintf(":%d", config.Server.Port))
