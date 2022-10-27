@@ -65,7 +65,7 @@ func ServeHTTP(config config.MyConfig) {
 		//}
 		g.Use(TlsHandler())
 		// 开启端口监听
-		g.RunTLS(":443", "./cert/pris.ssdk.icu.pem", "./cert/pris.ssdk.icu.key")
+		g.RunTLS(":8888", "./cert/pris.ssdk.icu.pem", "./cert/pris.ssdk.icu.key")
 	}()
 }
 
@@ -73,7 +73,7 @@ func TlsHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		secureMiddleware := secure.New(secure.Options{
 			SSLRedirect: true,
-			SSLHost:     "localhost:443",
+			SSLHost:     "localhost:8888",
 		})
 		err := secureMiddleware.Process(c.Writer, c.Request)
 
@@ -89,7 +89,7 @@ func SocketHandler(c *gin.Context) {
 	src.SocketHandler(c, db)
 }
 func ProtalHandler(c *gin.Context) {
-	src.ProtalHandler(c, db)
+	src.PortalHandler(c, db)
 }
 func GetDB() *sql.DB {
 	db, err := sql.Open(dbDriverName, dbName)

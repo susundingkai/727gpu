@@ -24,7 +24,15 @@ type DataObj struct {
 	GpuMemRate   int     `json:"GpuMemRate"`
 	Time         int     `json:"Time"`
 }
+type ProcessObj struct {
+	Id      interface{} `json:"Id"`
+	Ip      interface{} `json:"Ip"`
+	User    interface{} `json:"User"`
+	MemUsed interface{} `json:"MemUsed"`
+	Name    interface{} `json:"Name"`
+}
 type DataSlice []DataObj
+type ProcSlice []ProcessObj
 
 func (l DataSlice) Len() int           { return len(l) }
 func (l DataSlice) Swap(i, j int)      { l[i], l[j] = l[j], l[i] }
@@ -102,11 +110,13 @@ func QueryAllMachine(db *sql.DB) (l []MachineObj, e error) {
 	return result, nil
 }
 
-func QueryMachine(db *sql.DB, ip string) (name string, e error) {
+func QueryMachine(db *sql.DB, ip string) (_ MachineObj, e error) {
 	sql := `select * from machine where Ip=?`
-	err := db.QueryRow(sql, ip).Scan(&name)
+	var Ip, Name, Model string
+	var Cnt int
+	err := db.QueryRow(sql, ip).Scan(&Ip, &Name, &Cnt, &Model)
 	if err != nil {
-		return "", err
+		return MachineObj{}, err
 	}
-	return name, nil
+	return MachineObj{Ip, Name, Cnt, Model}, nil
 }
