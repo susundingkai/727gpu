@@ -9,7 +9,7 @@ from typing import Type
 import pynvml   # pip install nvidia-ml-py
 import websockets   # pip install websockets
 import psutil
-
+import platform
 SERVER_ADDR = "pris.ssdk.icu"
 SERVER_PORT = 8888
 SEND_INTERVAL = 6       # 默认发送间隔，单位为秒
@@ -24,6 +24,8 @@ class Client:
         self.gpu_count = pynvml.nvmlDeviceGetCount()    # 获取 Nvidia GPU 块数
         handle = pynvml.nvmlDeviceGetHandleByIndex(0)
         self.gpu_model = str(pynvml.nvmlDeviceGetName(handle))
+        self.platform = platform.system()
+        self.get_gpu_process_json()
 
     def __del__(self):
         pynvml.nvmlShutdown()   # 关闭管理工具
@@ -41,17 +43,33 @@ class Client:
             st.close()
         return ip
     def get_gpu_process_json(self):
-        handle = pynvml.nvmlDeviceGetHandleByIndex(0)
-        pidAllInfo = pynvml.nvmlDeviceGetGraphicsRunningProcesses(handle)
-        for pidInfo in pidAllInfo:
-            pidUser = psutil.Process(pidInfo.pid).username()
-            gpu_used=pidInfo.usedGpuMemory
-            if gpu_used is not None:
-                gpu_used/=UNIT
-            if pidInfo.usedGpuMemory is not None:
-                print("进程pid：", pidInfo.pid, "用户名：", pidUser, 
-                    "显存占有：", gpu_used, "Mb",
-                    "进程名：",pidInfo.name) # 统计某pid使用的显存
+        t_gpu_info=[]
+        for i in range(self.gpu_count):
+            gpu_info=[]
+            handle = pynvml.nvmlDeviceGetHandleByIndex(i)
+            if(self.platform =="Windows"):
+                pidAllInfo = pynvml.nvmlDeviceGetGraphicsRunningProcesses(handle)
+            else:
+                pidAllInfo = pynvml.nvmlDeviceGetComputeRunningProcesses(handle)
+            for pidInfo in pidAllInfo:
+                pidUser = psutil.Process(pidInfo.pid).username()
+                pidName = psutil.Process(pidInfo.pid).cmdline()
+                if isinstance(pidName,list):
+                    pidName=' '.join(pidName)
+                gpu_used=pidInfo.usedGpuMemory
+                if gpu_used is not None:
+                    gpu_used/=UNIT
+                else:
+                    gpu_used=0
+                if pidInfo.usedGpuMemory is not None:
+                    gpu_info.append({"User":pidUser,"MemUsed":gpu_used,"Name":pidName})
+            t_gpu_info.append(gpu_info)
+        return json.dumps(
+            {
+                "Type": 2,
+                "Data": t_gpu_info
+            }
+        )
     def get_gpu_stat_json(self):
         gpu_stats = []
 
@@ -144,7 +162,7 @@ class Client:
 
 if __name__ == "__main__":
     c = Client()
-    c.get_gpu_process_json()
+    print(c.get_gpu_process_json())
     try:
         asyncio.get_event_loop().run_until_complete(c.launch())
     finally:
