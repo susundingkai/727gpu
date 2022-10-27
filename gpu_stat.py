@@ -45,9 +45,12 @@ class Client:
         pidAllInfo = pynvml.nvmlDeviceGetGraphicsRunningProcesses(handle)
         for pidInfo in pidAllInfo:
             pidUser = psutil.Process(pidInfo.pid).username()
+            gpu_used=pidInfo.usedGpuMemory
+            if gpu_used is not None:
+                gpu_used/=UNIT
             if pidInfo.usedGpuMemory is not None:
                 print("进程pid：", pidInfo.pid, "用户名：", pidUser, 
-                    "显存占有：", pidInfo.usedGpuMemory/UNIT, "Mb",
+                    "显存占有：", gpu_used, "Mb",
                     "进程名：",pidInfo.name) # 统计某pid使用的显存
     def get_gpu_stat_json(self):
         gpu_stats = []
