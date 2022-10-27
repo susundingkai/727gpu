@@ -7,52 +7,32 @@ Page({
     machineIPs: [],
     gpuInfo: {}
   },
-  connect_server() {
-    var _this = this;
-    //创建websocket
-    //正式地址使用wss
-    wx.closeSocket({complete(res){
-      console.log('res:', res)
-    }})
-    socket = wx.connectSocket({
-      url: 'wss://pris.ssdk.icu/portal',
-      success: res => {
-        console.info('创建连接成功');
-        //socketTaskId: 22
-        // console.info(res);
-      }
-    });
-    // console.info(socket);
-    //事件监听
-    socket.onOpen(function () {
-      console.info('连接打开成功');
-    });
-    socket.onClose(function () {
-      console.info('连接关闭成功');
-    });
-    socket.onError(function () {
-      console.info('连接报错');
-    });
-    //服务器发送监听
-    socket.onMessage(function (e) {
-
-      var data = JSON.parse(e.data);
-      var _info = _this.data.gpuInfo
-      data = data.Data.Data
-      if (_info[data[0].Ip] == null) {
-        _this.data.machineIPs.push(data[0].Ip)
-      }
-      _info[data[0].Ip] = data
-      console.log(_info)
-      _this.setData({
-        machineIPs: _this.data.machineIPs,
-        gpuInfo: _info
-      })
-    });
+  watchBack_gpuinfo: function (value) {
+    //要执行的方法        
+    this.setData({
+      gpuInfo:value
+    })
+  },
+  watchBack_machineIps: function (value) {
+    //要执行的方法        
+    this.setData({
+      machineIPs:value
+    })
+  },
+  go_detail: function (e) {
+    var target=e.currentTarget.id
+    wx.navigateTo({
+      url: '/pages/detail/detail?ip='+target,
+    })
+    console.log('go detail',e.currentTarget.id)
   },
   // 事件处理函数
   onLoad(options) {
-    this.connect_server()
+    // this.connect_server()
+    let that = this;
+    getApp().watch_gpuInfo(that.watchBack_gpuinfo.bind(that)) //注册监听
+    getApp().watch_machineIPs(that.watchBack_machineIps.bind(that))
+    console.log("页面onLoad")
   },
   onRefresh() {
     //在当前页面显示导航条加载动画
@@ -61,8 +41,9 @@ Page({
     wx.showLoading({
       title: '刷新中...',
     })
+    getApp().connect_server()
     console.log("refresh")
-    this.connect_server();
+    // this.connect_server();
     //隐藏loading 提示框
     wx.hideLoading();
     //隐藏导航条加载动画
