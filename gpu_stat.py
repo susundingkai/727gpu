@@ -40,7 +40,15 @@ class Client:
         finally:
             st.close()
         return ip
-
+    def get_gpu_process_json(self):
+        handle = pynvml.nvmlDeviceGetHandleByIndex(i)
+        pidAllInfo = pynvml.nvmlDeviceGetGraphicsRunningProcesses(handle)
+        for pidInfo in pidAllInfo:
+            pidUser = psutil.Process(pidInfo.pid).username()
+            if pidInfo.usedGpuMemory is not None:
+                print("进程pid：", pidInfo.pid, "用户名：", pidUser, 
+                    "显存占有：", pidInfo.usedGpuMemory/UNIT, "Mb",
+                    "进程名：",pidInfo.name) # 统计某pid使用的显存
     def get_gpu_stat_json(self):
         gpu_stats = []
 
@@ -49,13 +57,7 @@ class Client:
 
         for i in range(self.gpu_count):
             handle = pynvml.nvmlDeviceGetHandleByIndex(i)   # 获取GPU i的handle，后续通过handle来处理
-            pynvml.c_int
-            pidAllInfo = pynvml.nvmlDeviceGetGraphicsRunningProcesses(handle)
-            # for pidInfo in pidAllInfo:
-            #     pidUser = psutil.Process(pidInfo.pid).username()
-            #     if pidInfo.usedGpuMemory is not None:
-            #         print("进程pid：", pidInfo.pid, "用户名：", pidUser, 
-            #             "显存占有：", pidInfo.usedGpuMemory/UNIT, "Mb") # 统计某pid使用的显存
+
             memoryInfo = pynvml.nvmlDeviceGetMemoryInfo(handle) # 通过handle获取GPU i的信息
             gpuName = str(pynvml.nvmlDeviceGetName(handle))
             gpuTemperature = pynvml.nvmlDeviceGetTemperature(handle, 0)
