@@ -41,7 +41,7 @@ class Client:
             st.close()
         return ip
     def get_gpu_process_json(self):
-        handle = pynvml.nvmlDeviceGetHandleByIndex(i)
+        handle = pynvml.nvmlDeviceGetHandleByIndex(0)
         pidAllInfo = pynvml.nvmlDeviceGetGraphicsRunningProcesses(handle)
         for pidInfo in pidAllInfo:
             pidUser = psutil.Process(pidInfo.pid).username()
