@@ -1,4 +1,4 @@
-name: Package Application with Pyinstaller
+name: Package Application with Pyinstaller for Windows
 
 # Controls when the workflow will run
 on:
@@ -28,5 +28,5 @@ jobs:
 
       - uses: actions/upload-artifact@v3.1.1
         with:
-          name: gpu_stat
+          name: gpu_stat_windows
           path: ./dist/windows
