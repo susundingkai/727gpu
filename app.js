@@ -75,7 +75,7 @@ App({
       }
     })
     socket = wx.connectSocket({
-      url: 'wss://pris.ssdk.icu:8888/portal',
+      url: 'wss://pris.ssdk.icu/portal',
       success: res => {
         console.info('创建连接成功');
 
@@ -107,6 +107,7 @@ App({
           ip_list.push([data[0].Ip, ori.Data.Name])
         }
         info_list[data[0].Ip] = data
+        // console.log(Date.now())
         _this.globalData.machineIPs = ip_list.sort()
         _this.globalData.gpuInfo = info_list
       }
@@ -120,7 +121,7 @@ App({
             return (proc.Ip == Ip) && (proc.Id == index);
           }));
         }
-        console.log(_gpuProc)
+        // console.log(_gpuProc)
         _this.globalData.gpuProc = _gpuProc
       }
     });

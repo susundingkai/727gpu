@@ -10,21 +10,30 @@ Page({
   watchBack_gpuinfo: function (value) {
     //要执行的方法        
     this.setData({
-      gpuInfo:value
+      gpuInfo: value
     })
   },
   watchBack_machineIps: function (value) {
     //要执行的方法        
     this.setData({
-      machineIPs:value
+      machineIPs: value
     })
   },
   go_detail: function (e) {
-    var target=e.currentTarget.id
-    wx.navigateTo({
-      url: '/pages/detail/detail?ip='+target,
-    })
-    console.log('go detail',e.currentTarget.id)
+    var target = e.currentTarget.id
+    var cur = Date.now()
+    var past = app.globalData.gpuInfo[target][0].Time
+    if (cur - past > 20000) {
+      wx.showToast({
+        title: '该节点已离线',
+        icon:'error'
+      })
+    } else {
+      wx.navigateTo({
+        url: '/pages/detail/detail?ip=' + target,
+      })
+      console.log('go detail', e.currentTarget.id)
+    }
   },
   // 事件处理函数
   onLoad(options) {
