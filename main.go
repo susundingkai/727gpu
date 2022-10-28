@@ -65,7 +65,7 @@ func ServeHTTP(config config.MyConfig) {
 		//}
 		g.Use(TlsHandler())
 		// 开启端口监听
-		g.RunTLS(":8888", "./cert/pris.ssdk.icu.pem", "./cert/pris.ssdk.icu.key")
+		g.RunTLS(":443", "./cert/pris.ssdk.icu.pem", "./cert/pris.ssdk.icu.key")
 	}()
 }
 
@@ -73,7 +73,7 @@ func TlsHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		secureMiddleware := secure.New(secure.Options{
 			SSLRedirect: true,
-			SSLHost:     "localhost:8888",
+			SSLHost:     "localhost:443",
 		})
 		err := secureMiddleware.Process(c.Writer, c.Request)
 
