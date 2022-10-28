@@ -4,9 +4,10 @@ import asyncio
 import time
 import traceback
 import platform
+import ssl
 
 import pynvml   # pip install nvidia-ml-py
-import websockets   # pip install websockets
+import websockets.client   # pip install websockets, https://github.com/aaugustin/websockets/issues/974#issuecomment-932727653
 import psutil
 
 SERVER_ADDR = "pris.ssdk.icu"
@@ -144,14 +145,12 @@ class Client:
     async def launch(self):
         while True:
             try:
-                import ssl, websockets
-
                 #todo kluge
                 #HIGHLY INSECURE
                 ssl_context = ssl.create_default_context()
                 ssl_context.check_hostname = False
                 ssl_context.verify_mode = ssl.CERT_NONE
-                async with websockets.connect(f"wss://{SERVER_ADDR}:{SERVER_PORT}/node", ssl=ssl_context) as websocket:
+                async with websockets.client.connect(f"wss://{SERVER_ADDR}:{SERVER_PORT}/node", ssl=ssl_context) as websocket:
                     print("Connection succeeded!")
                     await self.handshake(websocket)
                     await self.send_data(websocket)
