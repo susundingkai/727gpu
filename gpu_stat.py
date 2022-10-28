@@ -11,7 +11,7 @@ import websockets   # pip install websockets
 import psutil
 import platform
 SERVER_ADDR = "pris.ssdk.icu"
-SERVER_PORT = 8888
+SERVER_PORT = 443
 SEND_INTERVAL = 6       # 默认发送间隔，单位为秒
 RETRY_INTERVAL = 10     # 建立连接失败时重试的等待间隔，单位为秒
 UNIT = 1024 ** 3        # 使用 GB 作为单位
