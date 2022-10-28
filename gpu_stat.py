@@ -3,13 +3,12 @@ import socket
 import asyncio
 import time
 import traceback
-from turtle import update
-from typing import Type
+import platform
 
 import pynvml   # pip install nvidia-ml-py
 import websockets   # pip install websockets
 import psutil
-import platform
+
 SERVER_ADDR = "pris.ssdk.icu"
 SERVER_PORT = 443
 SEND_INTERVAL = 6       # 默认发送间隔，单位为秒
@@ -42,6 +41,7 @@ class Client:
         finally:
             st.close()
         return ip
+
     def get_gpu_process_json(self):
         t_gpu_info=[]
         for i in range(self.gpu_count):
@@ -60,7 +60,7 @@ class Client:
                     gpu_used/=UNIT
                 else:
                     gpu_used=0
-                t_gpu_info.append({"Id":i,"Ip":self.local_ip,"User":pidUser,"MemUsed":gpu_used,"Name":pidName})
+                t_gpu_info.append({"Id": i, "Ip": self.local_ip, "User": pidUser, "MemUsed": gpu_used, "Name": pidName})
 
         return json.dumps(
             {
@@ -68,6 +68,7 @@ class Client:
                 "Data": t_gpu_info
             }
         )
+
     def get_gpu_stat_json(self):
         gpu_stats = []
 
@@ -140,18 +141,17 @@ class Client:
                 data = None
                 break
 
-
     async def launch(self):
         while True:
             try:
-                import asyncio, ssl, websockets
+                import ssl, websockets
 
                 #todo kluge
                 #HIGHLY INSECURE
                 ssl_context = ssl.create_default_context()
                 ssl_context.check_hostname = False
                 ssl_context.verify_mode = ssl.CERT_NONE
-                async with websockets.connect(f"wss://{SERVER_ADDR}:{SERVER_PORT}/node",ssl=ssl_context) as websocket:
+                async with websockets.connect(f"wss://{SERVER_ADDR}:{SERVER_PORT}/node", ssl=ssl_context) as websocket:
                     print("Connection succeeded!")
                     await self.handshake(websocket)
                     await self.send_data(websocket)
@@ -167,4 +167,3 @@ if __name__ == "__main__":
         asyncio.get_event_loop().run_until_complete(c.launch())
     finally:
         del c
-    
