@@ -11,7 +11,7 @@ import websockets   # pip install websockets
 import psutil
 import platform
 SERVER_ADDR = "pris.ssdk.icu"
-SERVER_PORT = 8888
+SERVER_PORT = 443
 SEND_INTERVAL = 6       # 默认发送间隔，单位为秒
 RETRY_INTERVAL = 10     # 建立连接失败时重试的等待间隔，单位为秒
 UNIT = 1024 ** 3        # 使用 GB 作为单位
@@ -25,7 +25,7 @@ class Client:
         handle = pynvml.nvmlDeviceGetHandleByIndex(0)
         self.gpu_model = str(pynvml.nvmlDeviceGetName(handle))
         self.platform = platform.system()
-        self.get_gpu_process_json()
+        # self.get_gpu_process_json()
 
     def __del__(self):
         pynvml.nvmlShutdown()   # 关闭管理工具
@@ -45,7 +45,6 @@ class Client:
     def get_gpu_process_json(self):
         t_gpu_info=[]
         for i in range(self.gpu_count):
-            gpu_info=[]
             handle = pynvml.nvmlDeviceGetHandleByIndex(i)
             if(self.platform =="Windows"):
                 pidAllInfo = pynvml.nvmlDeviceGetGraphicsRunningProcesses(handle)
@@ -61,9 +60,8 @@ class Client:
                     gpu_used/=UNIT
                 else:
                     gpu_used=0
-                if pidInfo.usedGpuMemory is not None:
-                    gpu_info.append({"User":pidUser,"MemUsed":gpu_used,"Name":pidName})
-            t_gpu_info.append(gpu_info)
+                t_gpu_info.append({"Id":i,"Ip":self.local_ip,"User":pidUser,"MemUsed":gpu_used,"Name":pidName})
+
         return json.dumps(
             {
                 "Type": 2,
@@ -134,6 +132,8 @@ class Client:
                 Type=need_update['Type']
                 if Type==-1:
                     await websocket.send(self.get_gpu_stat_json())
+                if Type==2:
+                    await websocket.send(self.get_gpu_process_json())
                 # time.sleep(SEND_INTERVAL)
             except:
                 print("Connection is Closed")
@@ -162,7 +162,7 @@ class Client:
 
 if __name__ == "__main__":
     c = Client()
-    print(c.get_gpu_process_json())
+    # print(c.get_gpu_process_json())
     try:
         asyncio.get_event_loop().run_until_complete(c.launch())
     finally:
