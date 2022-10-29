@@ -1,0 +1,42 @@
+<!--pages/detail/detail.wxml-->
+<View class="dcontainer">
+  <l-collapse>
+    <l-collapse-item wx:for="{{gpuProc}}" title="GPU {{index}}">
+      <l-card wx:for="{{item}}" type="primary" plaintext="{{true}}" title="User: {{item.User}}">
+        <l-collapse class="display_item" style="flex-direction:row;">
+          <view>
+            memUsed: {{item.MemUsed}} GB
+          </view>
+          <l-collapse-item title="CMD LINES">
+            <view class="content">{{item.Name}}</view>
+          </l-collapse-item>
+        </l-collapse>
+      </l-card>
+    </l-collapse-item>
+  </l-collapse>
+
+  <l-button wx:if="{{!popup}}" bindtap="sub" l-class="sub" class="sub" shape="semicircle">
+    <l-icon size="40" name="notification" color="#FFE57F" />
+  </l-button>
+</View>
+<l-popup l-panel-class="popup" show="{{popup}}" animation="{{true}}" content-align="bottom" bind:lintap="sub">
+  <l-form name="subscribe" l-form-container-class="l-form-container-class" l-form-btn-class="l-form-btn-class" bind:linsubmit="submit">
+    <l-form-item label="订阅:" name="gpuid">
+      <l-radio-group current="{{gpuid}}" none-checked="{{false}}" bind:linchange="sel">
+        <l-radio wx:for="{{gpuProc}}" key="{{index}}">GPU ID: {{index}}</l-radio>
+      </l-radio-group>
+    </l-form-item>
+    <l-form-item label="提醒阈值:" name="gpuid">
+      <slider bindchange="changeMemTh" value="{{slide}}" show-value/>
+    </l-form-item>
+
+    <view class="l-form-btn-view">
+      <view slot="submit">
+        <l-button bindtap="submit">提交</l-button>
+      </view>
+      <view slot="reset">
+        <l-button type="default" plain>重置</l-button>
+      </view>
+    </view>
+  </l-form>
+</l-popup>

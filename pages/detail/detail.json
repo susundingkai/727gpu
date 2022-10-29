@@ -1,0 +1,16 @@
+{
+  "enablePullDownRefresh": true,
+  "usingComponents": {
+    "l-tab-bar":"/miniprogram_npm/lin-ui/tab-bar/index",
+    "l-collapse":"/miniprogram_npm/lin-ui/collapse/index",
+    "l-collapse-item":"/miniprogram_npm/lin-ui/collapse-item/index",
+    "l-card":"/miniprogram_npm/lin-ui/card/index",
+    "l-popup":"/miniprogram_npm/lin-ui/popup/index",
+    "l-button":"/miniprogram_npm/lin-ui/button/index",
+    "l-icon":"/miniprogram_npm/lin-ui/icon/index",
+    "l-radio-group":"/miniprogram_npm/lin-ui/radio-group/index",
+    "l-radio":"/miniprogram_npm/lin-ui/radio/index",
+    "l-form":"/miniprogram_npm/lin-ui/form/index",
+    "l-form-item":"/miniprogram_npm/lin-ui/form-item/index"
+  }
+}

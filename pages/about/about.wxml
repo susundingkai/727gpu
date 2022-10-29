@@ -1,0 +1,14 @@
+<view>
+<image
+      src="/images/sz.gif"
+      mode="aspectFit"
+      wx:if="{{show}}"
+ />
+ <image
+      src="/images/zs.gif"
+      mode="aspectFit"
+      wx:else
+ />
+</view>
+<view>2.0.1</view>
+<l-tab-bar list="{{list}}" />
