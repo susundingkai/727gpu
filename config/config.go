@@ -10,13 +10,20 @@ import (
 type Server struct {
 	Port int `json:"port"`
 }
+type Wx struct {
+	Appid     string `json:"appid"`
+	Appsecret string `json:"appsecret"`
+	SubSucee  string `json:"subSucee"`
+	SubFailed string `json:"subFailed"`
+}
 type MyConfig struct {
 	Server Server `json:"server"`
+	Wx     Wx     `json:"wx"`
 }
 
 func ReadConfig() MyConfig {
 	// Open our jsonFile
-	jsonFile, err := os.Open("config/config.json")
+	jsonFile, err := os.Open("config/config_example.json")
 	// if we os.Open returns an error then handle it
 	if err != nil {
 		fmt.Println(err)

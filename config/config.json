@@ -1,5 +1,11 @@
 {
   "server": {
-    "port": 8765
+    "port": 443
+  },
+  "wx": {
+    "appid": "",
+    "appsecret": "",
+    "subSucee": "",
+    "subFailed": ""
   }
 }
