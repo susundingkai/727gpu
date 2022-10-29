@@ -104,12 +104,38 @@ App({
         var info_list = getApp().globalData.gpuInfo
         // console.log(ip_list)
         if (info_list[data[0].Ip] == null) {
-          ip_list.push([data[0].Ip, ori.Data.Name])
+          var cur = Date.now()
+          var past = data[0].Time
+          var online = true
+          if (cur - past > 20000) {
+            online = false
+          }
+          ip_list.push([data[0].Ip, ori.Data.Name, online])
+        } else {
+          var ip_list = getApp().globalData.machineIPs
+          for (let index = 0; index < ip_list.length; index++) {
+            if (target == ip_list[index][0]) {
+              ip_list[index][2] = true
+              getApp().globalData.machineIPs = ip_list
+              break
+            }
+          }
         }
         info_list[data[0].Ip] = data
         // console.log(Date.now())
         _this.globalData.machineIPs = ip_list.sort()
         _this.globalData.gpuInfo = info_list
+      }
+      if (Type == 1) {
+        var target = ori.Data
+        var ip_list = getApp().globalData.machineIPs
+        for (let index = 0; index < ip_list.length; index++) {
+          if (target == ip_list[index][0]) {
+            ip_list[index][2] = false
+            getApp().globalData.machineIPs = ip_list
+            break
+          }
+        }
       }
       if (Type == 2) {
         var _gpuProc = getApp().globalData.gpuProc
@@ -129,9 +155,23 @@ App({
   globalData: {
     machineIPs: [],
     gpuInfo: {},
-    gpuProc: {}
+    gpuProc: {},
+    userCode: ''
   },
   onLaunch() {
+    var that = this;
+    wx.login({
+      success: res => {
+        // 发送 res.code 到后端换取 openId, sessionKey, unionId
+        // 后端访问请求获取用户openId
+        // console.log(res.code);
+        that.globalData.userCode = res.code;
+      },
+      fail: res => {
+        // 登录失败
+        console.log("登录失败！");
+      }
+    })
     this.connect_server()
   },
 

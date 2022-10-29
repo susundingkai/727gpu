@@ -4,6 +4,21 @@ const app = getApp()
 var socket = {};
 Page({
   data: {
+    list: [{
+        pagePath: "/pages/index/index",
+        text: "首页",
+        iconPath: "/images/home-line.png",
+        selectedIconPath: "/images/home-fill.png",
+        iconSize: 24
+      },
+      {
+        pagePath: "/pages/about/about",
+        text: "关于",
+        iconPath: "/images/profile-line.png",
+        selectedIconPath: "/images/profile-fill.png",
+        iconSize: 24
+      }
+    ],
     machineIPs: [],
     gpuInfo: {}
   },
@@ -20,13 +35,18 @@ Page({
     })
   },
   go_detail: function (e) {
+    var ip_list = getApp().globalData.machineIPs
     var target = e.currentTarget.id
-    var cur = Date.now()
-    var past = app.globalData.gpuInfo[target][0].Time
-    if (cur - past > 20000) {
+    var index = true
+    for (let i = 0; i < ip_list.length; i++) {
+      if (target == ip_list[i][0]) {
+        index = ip_list[i][2]
+      }
+    }
+    if ( !index) {
       wx.showToast({
         title: '该节点已离线',
-        icon:'error'
+        icon: 'error'
       })
     } else {
       wx.navigateTo({
@@ -34,6 +54,17 @@ Page({
       })
       console.log('go detail', e.currentTarget.id)
     }
+  },
+  sub: function (e) {
+    wx.requestSubscribeMessage({
+      tmplIds: ['EqKN5V8NPPpMtt5bsrfe52TC5zJGI2dEfR1o8xKlNm0'],
+      success(res) {
+        console.log(res);
+      },
+      fail(res) {
+        console.log(res);
+      }
+    })
   },
   // 事件处理函数
   onLoad(options) {

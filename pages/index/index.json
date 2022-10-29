@@ -1,6 +1,7 @@
 {
   "enablePullDownRefresh": true,
   "usingComponents": {
+    "l-tab-bar":"/miniprogram_npm/lin-ui/tab-bar/index",
     "l-button":"/miniprogram_npm/lin-ui/button/index",
     "l-card":"/miniprogram_npm/lin-ui/card/index",
     "l-grid":"/miniprogram_npm/lin-ui/grid/index",

@@ -11,4 +11,5 @@
       </l-card>
     </l-card>
   </scroll-view>
+  <l-tab-bar list="{{list}}" />
 </view>
