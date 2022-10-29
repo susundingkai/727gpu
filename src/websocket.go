@@ -294,6 +294,7 @@ LOOP:
 
 			jsonStr, _ := json.Marshal(rev.Data)
 			// Convert json string to struct
+			fmt.Println("订阅信息:", string(jsonStr))
 			if err := json.Unmarshal(jsonStr, &msg); err != nil {
 				fmt.Println(err)
 				continue
