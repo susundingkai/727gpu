@@ -51,7 +51,7 @@ Page({
     wx.requestSubscribeMessage({
       tmplIds: ['EqKN5V8NPPpMtt5bsrfe52TC5zJGI2dEfR1o8xKlNm0', '5rFW4do6BBssNT_hRiq-gffEK0IXd4NkcF0QIqh8BtU'],
       success(res) {
-        console.log(res);
+        // console.log(res);
         wx.sendSocketMessage({
           data: JSON.stringify({
             Type: 3,
