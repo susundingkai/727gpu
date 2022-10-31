@@ -47,10 +47,14 @@ class Client:
         t_gpu_info=[]
         for i in range(self.gpu_count):
             handle = pynvml.nvmlDeviceGetHandleByIndex(i)
-            if(self.platform =="Windows"):
+            # if(self.platform =="Windows"):
+            #     pidAllInfo = pynvml.nvmlDeviceGetGraphicsRunningProcesses(handle)
+            # else:
+            #     pidAllInfo = pynvml.nvmlDeviceGetComputeRunningProcesses(handle)
+            pidAllInfo = pynvml.nvmlDeviceGetComputeRunningProcesses(handle)
+            if(len(pidAllInfo)==0):
                 pidAllInfo = pynvml.nvmlDeviceGetGraphicsRunningProcesses(handle)
-            else:
-                pidAllInfo = pynvml.nvmlDeviceGetComputeRunningProcesses(handle)
+
             for pidInfo in pidAllInfo:
                 pidUser = psutil.Process(pidInfo.pid).username()
                 pidName = psutil.Process(pidInfo.pid).cmdline()
@@ -62,7 +66,8 @@ class Client:
                 else:
                     gpu_used=0
                 t_gpu_info.append({"Id": i, "Ip": self.local_ip, "User": pidUser, "MemUsed": gpu_used, "Name": pidName})
-
+        if(len(t_gpu_info)==0):
+            t_gpu_info=[{}]
         return json.dumps(
             {
                 "Type": 2,
