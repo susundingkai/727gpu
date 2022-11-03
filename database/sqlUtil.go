@@ -77,8 +77,8 @@ func QueryNewData(db *sql.DB, lastTime int, ip string) (l DataSlice, e error) {
 	var _sql string
 	var rows *sql.Rows
 	var err error
-	_sql = "select * from (select * from gpu where Ip=? order by `Time` desc ) group by `GpuId`"
-	rows, err = db.Query(_sql, ip)
+	_sql = "select * from (select * from gpu where Time>? AND Ip=? order by `Time` desc ) group by `GpuId`"
+	rows, err = db.Query(_sql, lastTime-600*1000, ip)
 	if err != nil {
 		return nil, err
 	}

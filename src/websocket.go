@@ -207,7 +207,7 @@ func PortalHandler(c *gin.Context, db *sql.DB) {
 
 // type 0
 func revGpuInfoLoop(ctx context.Context, db *sql.DB, ws *websocket.Conn) {
-	lastTime := 0
+	lastTime := int(time.Now().UnixNano() / 1e6)
 LOOP:
 	for {
 		//fmt.Println(machines)
